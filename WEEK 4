@@ -1,0 +1,45 @@
+create table Borrower(
+Customername varchar(20),
+Loan_number int,
+foreign key(Customername) references BankCustomer(Customername),
+foreign key(Loan_number) references Loan(Loan_number)
+);
+
+insert into Borrower values("Avinash",1);
+insert into Borrower values("Dinesh",2);
+insert into Borrower values("Mohan",3);
+insert into Borrower values("Nikil",4);
+insert into Borrower values("Ravi",5);
+
+insert into branch values("SBI_MantriMarg","Delhi",200000);
+insert into BankAccount values(12,"SBI_MantriMarg",2000);
+insert into Depositer values("Nikil",12);
+
+select d.Customername from branch b, Depositer d, BankAccount ba where
+b.Branch_city='Delhi' and d.Accno=ba.Accno and b.Branch_name=ba.Branch_name
+group by d.Customername having count(distinct b.Branch_name)= (select count(distinct b.Branch_name) from branch b where b.Branch_city='Delhi’;
+
+select distinct b.Customername from  Borrower b, Depositer d
+where b.Customername NOT IN(
+                     select d.Customername from Loan l,Depositer d, Borrower b
+                     where l.Loan_number=b.Loan_number and d.Customername=b.Customername);
+                    
+select distinct d.Customername from Depositer d
+where d.Customername IN(
+                     select d.Customername from branch br,Depositer d, BankAccount ba
+                     where br.Branch_city='Bangalore' and br.Branch_name=ba.Branch_name
+                     and ba.accno=d.accno and Customername IN(
+                            select Customername from Borrower)
+                     );
+                    
+select b.Branch_name from Branch b
+where b.assets> ALL (
+select SUM(b.assets) from Branch b
+                    where b.Branch_City='Bangalore' );
+                    
+delete ba.* from BankAccount ba, branch b where Branch_city='Bombay' and ba.Branch_name=b.Branch_name;
+select * from BankAccount;
+
+UPDATE BankAccount set Balance=(Balance + (Balance*0.05));
+
+delete b.* from branch b where Branch_city=’Bangalore’;
