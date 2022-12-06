@@ -1,0 +1,72 @@
+create database dhiksha_employee;
+use dhiksha_employee;
+create table dhiksha_employee.project(
+pno int,
+ploc varchar(40),
+pname varchar(40),
+PRIMARY KEY(pno)
+);
+create table dhiksha_employee.dept(
+deptno int,
+dname varchar(40),
+dloc varchar(40),
+PRIMARY KEY(deptno)
+);
+create table dhiksha_employee.employee(
+empno int,
+ename varchar(40),
+mgr_no int,
+hiredate date,
+sal int,
+deptno int,
+primary key (empno),
+foreign key (deptno) references dept(deptno)
+);
+create table dhiksha_employee.incentives(
+empno int,
+incentive_date date,
+incentive_amount int,
+primary key(incentive_date),
+foreign key (empno) references employee(empno)
+);
+create table dhiksha_employee.assigned_to(
+empno int,
+pno int,
+job_role varchar(50),
+foreign key (pno) references project(pno),
+foreign key (empno) references employee(empno)
+);
+
+insert into project values(1,"Bengaluru","Syntax");
+insert into project values(2,"Gujurat","Rolex");
+insert into project values(3,"Mysuru","Hybrid");
+insert into project values(4,"Hyderabad,","Synergy");
+insert into project values(5,"Mumbai","Mercury");
+
+insert into dept values(10,"Sales","Bengaluru");
+insert into dept values(20,"Finance","West Bengal");
+insert into dept values(30,"Marketing","Bihar");
+insert into dept values(40,"Purchase","Mumbai");
+insert into dept values(50,"Research & Develeopment","Hyderabad"); 
+
+insert into employee values(100,"Prannay",400,'2003-01-01',100000,10);
+insert into employee values(200,"Farhaan",500,'2004-02-02',100500,50);
+insert into employee values(300,"Sanika",100,'2003-01-21',200500,30);
+insert into employee values(400,"Sakshi", NULL ,'2008-02-17',300500,40);
+insert into employee values(500,"Nishith",300,'2004-03-05',200700,40);
+insert into employee values(600,"Sohan",200,'2005-11-01',200000,20);
+insert into employee values(700,"Mahima",200,'2005-11-21',200900,20);
+
+
+insert into incentives values(100,'2012-02-17',6000);
+insert into incentives values(200,'2012-05-21',7000);
+insert into incentives values(400,'2012-07-25',6500);
+insert into incentives values(500,'2013-04-19',7400);
+insert into incentives values(600,'2013-08-08',8000);
+
+insert into assigned_to values(100,1, "Project Manager");
+insert into assigned_to values(200,1, "Resource Manager");
+insert into assigned_to values(300,2, "Business Analyst");
+insert into assigned_to values(400,3, "Business Analyst");
+insert into assigned_to values(500,3, "Project Manager");
+insert into assigned_to values(600,5, "Resource Manager");
