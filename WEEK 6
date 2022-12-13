@@ -1,0 +1,120 @@
+create database dhiksha_employee;
+use dhiksha_employee;
+create table dhiksha_employee.project(
+pno int,
+ploc varchar(40),
+pname varchar(40),
+PRIMARY KEY(pno)
+);
+create table dhiksha_employee.dept(
+deptno int,
+dname varchar(40),
+dloc varchar(40),
+PRIMARY KEY(deptno)
+);
+create table dhiksha_employee.employee(
+empno int,
+ename varchar(40),
+mgr_no int,
+hiredate date,
+sal int,
+deptno int,
+primary key (empno),
+foreign key (deptno) references dept(deptno)
+);
+create table dhiksha_employee.incentives(
+empno int,
+incentive_date date,
+incentive_amount int,
+primary key(incentive_date),
+foreign key (empno) references employee(empno)
+);
+create table dhiksha_employee.assigned_to(
+empno int,
+pno int,
+job_role varchar(50),
+foreign key (pno) references project(pno),
+foreign key (empno) references employee(empno)
+);
+
+insert into project values(1,"Bengaluru","Syntax");
+insert into project values(2,"Gujurat","Rolex");
+insert into project values(3,"Mysuru","Hybrid");
+insert into project values(4,"Hyderabad,","Synergy");
+insert into project values(5,"Mumbai","Mercury");
+insert into project values(6,"Kerela","Innovation");
+
+insert into dept values(10,"Sales","Bengaluru");
+insert into dept values(20,"Finance","West Bengal");
+insert into dept values(30,"Marketing","Bihar");
+insert into dept values(40,"Purchase","Mumbai");
+insert into dept values(50,"Research & Develeopment","Hyderabad"); 
+insert into dept values(60,"Technical","Kerela"); 
+
+insert into employee values(100,"Prannay",700,'2003-01-01',24000,10);
+insert into employee values(200,"Farhaan",100,'2004-02-02',17000,50);
+insert into employee values(300,"Sanika",100,'2003-01-21',9000,30);
+insert into employee values(400,"Sakshi", 300 ,'2008-02-17',12000,40);
+insert into employee values(500,"Nishith",400,'2004-03-05',3000,40);
+insert into employee values(600,"Sohan",100,'2005-11-01',2000,20);
+insert into employee values(700,"Mahima",NULL,'2005-11-21',8000,20);
+-- insert into employee values(800,"Madhura",NULL,'2020-08-09',2000,20);
+
+insert into incentives values(100,'2019-02-17',6000);
+insert into incentives values(200,'2019-05-21',7000);
+insert into incentives values(400,'2012-07-25',6500);
+insert into incentives values(500,'2019-04-19',7400);
+insert into incentives values(600,'2013-08-08',8000);
+insert into incentives values(700,'2019-08-08',8000);
+
+insert into assigned_to values(100,1, "Project Manager");
+insert into assigned_to values(200,1, "Resource Manager");
+insert into assigned_to values(300,2, "Business Analyst");
+insert into assigned_to values(400,3, "Business Analyst");
+insert into assigned_to values(500,3, "Project Manager");
+insert into assigned_to values(600,5, "Resource Manager");
+
+select * from project; 
+select * from dept; 
+select * from employee; 
+select * from incentives; 
+select * from assigned_to; 
+
+-- 3)
+select e1.ename
+from employee e1, employee e2
+where e1.empno=e2.mgr_no
+group by e1.ename
+having count(e1.mgr_no)=(select count(e1.ename)
+from employee e1, employee e2
+where e1.empno=e2.mgr_no
+group by e1.ename order by count(e1.ename) desc limit 1);
+	
+-- 4)
+select m.ename
+from employee m
+where m.empno in
+    (select mgr_no
+     from employee)
+     and m.sal>(select avg(n.sal)
+     from employee n 
+     where n.mgr_no=m.empno);
+
+-- 5) 
+select ename from employee where empno in(select distinct mgr_no
+from employee
+where empno in (select distinct mgr_no
+from employee 
+where empno in(select distinct mgr_no from employee)));
+
+-- 6)
+select * from employee where empno=
+(select i.empno from incentives i
+where i.incentive_amount= (select max(n.incentive_amount) from incentives n
+where n.incentive_amount<(select max(inc.incentive_amount) from incentives inc
+where inc.incentive_date between '2019-01-01' and '2019-12-31') and incentive_date between '2019-01-01' and '2019-12-31'));
+
+-- 7)
+select e2.ename
+from employee e1, employee e2
+where e1.empno=e2.mgr_no and e1.deptno=e2.deptno;
