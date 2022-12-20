@@ -1,0 +1,79 @@
+create database dhiksha_supplier;
+use dhiksha_supplier;
+create table dhiksha_supplier.Supplier(
+sid int,
+sname varchar(15),
+city varchar(10),
+PRIMARY KEY(sid)
+);
+create table dhiksha_supplier.Parts(
+pid int,
+pname varchar(10),
+color varchar(5),
+PRIMARY KEY(pid)
+);
+create table dhiksha_supplier.Catalog(
+sid int,
+pid int,
+cost int,
+PRIMARY KEY(sid, pid),
+FOREIGN KEY(sid) REFERENCES Supplier(sid),
+FOREIGN KEY(pid) REFERENCES Parts(pid)
+);
+insert into Supplier values(10001,"Acme Widget", "Bangalore");
+insert into Supplier values(10002,"Johns", "Kolkata");
+insert into Supplier values(10003,"Vimal", "Mumbai");
+insert into Supplier values(10004,"Reliance", "Delhi");
+
+insert into Parts values(20001,"Book", "Red");
+insert into Parts values(20002,"Pen", "Red");
+insert into Parts values(20003,"Pencil", "Green");
+insert into Parts values(20004,"Mobile", "Green");
+insert into Parts values(20005,"Charger", "Black");
+
+insert into Catalog values(10001,20001, 10);
+insert into Catalog values(10001,20002, 10);
+insert into Catalog values(10001,20003, 30);
+insert into Catalog values(10001,20004, 10);
+insert into Catalog values(10001,20005, 10);
+insert into Catalog values(10002,20001, 10);
+insert into Catalog values(10002,20002, 20);
+insert into Catalog values(10003,20003, 30);
+insert into Catalog values(10004,20003, 40);
+
+select * from Supplier;
+select * from Parts;
+select * from Catalog;
+
+select distinct p.pname
+from Parts p, Catalog c
+where p.pid = c.pid;
+                       
+SELECT  distinct s.sname
+FROM  Catalog C, Supplier s WHERE C.sid=s.sid and NOT EXISTS (SELECT  P.pid FROM  Parts P
+WHERE NOT EXISTS (SELECT  C1.sid FROM  Catalog C1
+WHERE C1.sid = C.sid and C1.pid = P.pid));
+                                                               
+SELECT  distinct s.sname
+FROM  Catalog C, Supplier s WHERE C.sid=s.sid and NOT EXISTS (SELECT  P.pid FROM  Parts P
+WHERE P.color="Red" and NOT EXISTS (SELECT  C1.sid FROM  Catalog C1
+WHERE C1.sid = C.sid and C1.pid = P.pid and P.color="Red"));
+                                                               
+select P.pname
+from Parts P, Catalog C, Supplier S
+WHERE P.pid = C.pid and C.sid = S.sid and S.sname = "Acme Widget"
+and NOT EXISTS (select * from Catalog C1, Supplier S1
+WHERE P.pid = C1.pid and C1.sid = S1.sid and
+S1.sname != "Acme Widget");
+                                                           
+SELECT DiSTINCT C.sid FROM Catalog C
+WHERE C.cost > (SELECT AVG(C1.cost)
+FROM Catalog C1 WHERE C1.pid = C.pid);
+                                                           
+SELECT P.pid, S.sname
+FROM Parts P, Supplier S, Catalog C
+WHERE C.pid = P.pid AND
+C.sid = S.sid AND
+C.cost = (SELECT MAX(C1.cost)
+FROM Catalog C1
+WHERE C1.pid = P.pid);
